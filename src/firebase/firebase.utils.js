@@ -3,15 +3,15 @@ import 'firebase/firestore';
 import 'firebase/auth';
 
 var config = {
-    apiKey: "AIzaSyAnN49l-1AO-B2pfLVRZrbR5jNK7fhf2Qc",
-    authDomain: "crwn-db-bd4df.firebaseapp.com",
-    databaseURL: "https://crwn-db-bd4df.firebaseio.com",
-    projectId: "crwn-db-bd4df",
-    storageBucket: "crwn-db-bd4df.appspot.com",
-    messagingSenderId: "240080947315",
-    appId: "1:240080947315:web:901ffa489dba8c1fd8c206",
-    measurementId: "G-2H4DDZCVWF"
-  }
+  apiKey: "AIzaSyDUJKBOVkNHJD_y28cOrmsb4K3E_SQDrt0",
+  authDomain: "crwn-db-f771b.firebaseapp.com",
+  databaseURL: "https://crwn-db-f771b.firebaseio.com",
+  projectId: "crwn-db-f771b",
+  storageBucket: "crwn-db-f771b.appspot.com",
+  messagingSenderId: "704466483273",
+  appId: "1:704466483273:web:f19e3fa7641f434726a798",
+  measurementId: "G-S3RV67P672"
+};
 
 firebase.initializeApp(config)
 
@@ -22,4 +22,28 @@ const provider = new firebase.auth.GoogleAuthProvider();
 provider.setCustomParameters({prompt: 'select_account'})
 export const signInWithGoogle = () => auth.signInWithPopup(provider);
 
+export const createUserProfileDocument = async (userAuth, additionalData) => {
+    if(!userAuth) return;
+
+    const userRef = firestore.doc(`users/${userAuth.uid}`)
+    
+    const snapShot = await userRef.get();
+    
+    if(!snapShot.exists){
+      const {displayName,email} = userAuth;
+      const createdAt = new Date();
+
+      try {
+        await userRef.set({
+          displayName,
+          email,
+          createdAt,
+          ...additionalData
+        })
+      }catch(error){
+        console.log('error creating user', error.message)
+      }
+    }
+    return userRef
+}
 export default firebase;
